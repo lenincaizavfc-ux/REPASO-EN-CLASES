@@ -79,7 +79,7 @@ El Service Worker es un script que el navegador ejecuta en segundo plano, separa
 
 ### 5.6 Cache API
 
-La Cache API es la interfaz que permite guardar y recuperar respuestas HTTP en el navegador. En el proyecto se utiliza dentro del Service Worker para almacenar los archivos estáticos (`index.html`, `styles.css`, `app.js`, `db.js` y `manifest.json`). Así, cuando no hay red, esos archivos se sirven desde la caché y la aplicación puede arrancar.
+La Cache API es la interfaz que permite guardar y recuperar respuestas HTTP en el navegador. En el proyecto se utiliza dentro del Service Worker para almacenar los archivos estáticos (`index.html`, `css/styles.css`, `js/app.js`, `js/db.js` y `manifest.json`). Así, cuando no hay red, esos archivos se sirven desde la caché y la aplicación puede arrancar.
 
 Debe aclararse que la Cache API no almacena las publicaciones, sino los archivos del programa. Los datos se almacenan en IndexedDB.
 

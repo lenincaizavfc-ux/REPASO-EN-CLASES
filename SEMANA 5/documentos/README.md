@@ -7,6 +7,9 @@ Aplicación web progresiva pequeña que demuestra el flujo:
 No usa frameworks, no usa librerías externas y no tiene backend. Es un proyecto
 frontend estático hecho solo con HTML5, CSS3 y JavaScript ES6+.
 
+**Publicada en GitHub Pages:**
+<https://lenincaizavfc-ux.github.io/REPASO-EN-CLASES/SEMANA%205/index.html>
+
 ---
 
 ## 1. ¿Qué hace la aplicación?
