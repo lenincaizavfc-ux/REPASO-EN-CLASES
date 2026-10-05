@@ -1,0 +1,483 @@
+/* ============================================================
+   Offline Posts - CSS3 puro
+   Enfoque mobile-first: 1 columna -> 2 columnas -> más ancho
+   Conceptos: Box Model, Flexbox, Grid, media queries, rem/%
+   ============================================================ */
+
+/* ---------- 1. Reset y variables ---------- */
+:root {
+  --color-fondo: #f1f5f9;
+  --color-panel: #ffffff;
+  --color-texto: #1e293b;
+  --color-texto-suave: #556274;
+  --color-primario: #2563eb;
+  --color-primario-oscuro: #1d4ed8;
+  --color-exito: #16a34a;
+  --color-pendiente: #ea580c;
+  --color-error: #dc2626;
+  --color-borde: #e2e8f0;
+  /* Borde de los campos: sobre blanco necesita 3:1 (WCAG 1.4.11) */
+  --color-borde-campo: #8a94a6;
+
+  --radio: 0.75rem;
+  --sombra: 0 1px 3px rgba(15, 23, 42, 0.12);
+  --ancho-maximo: 75rem;
+}
+
+/* El reset más simple: todo usa box-sizing border-box */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  /* 1rem = 16px: usamos unidades relativas */
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+/* Foco siempre visible (accesibilidad) */
+:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* Enlace de salto: solo visible al recibir foco */
+.saltar-al-contenido {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-primario);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  z-index: 10;
+}
+
+.saltar-al-contenido:focus {
+  left: 0;
+}
+
+/* ---------- 2. Contenedor (ancho máximo con %) ---------- */
+.contenedor {
+  width: 100%;
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* ---------- 3. Cabecera: Flexbox ---------- */
+.cabecera {
+  background-color: var(--color-primario);
+  color: #fff;
+  padding: 1.25rem 0;
+}
+
+.cabecera__contenido {
+  display: flex;
+  /* mobile-first: en vertical */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.cabecera__titulo {
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.cabecera__subtitulo {
+  font-size: 0.875rem;
+  color: #e0f2fe;
+}
+
+/* ---------- 4. Indicador de conexión ---------- */
+.indicador {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  /* Fondo solido, no translúcido: con rgba(255,255,255,.18) el texto blanco
+     quedaba en 3.76:1 y no cumplía el 4.5:1 de WCAG 1.4.3 (axe-core lo detecta) */
+  background-color: #1d4ed8;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.indicador__texto {
+  white-space: nowrap;
+}
+
+.indicador__punto {
+  line-height: 1;
+}
+
+.indicador--conectado .indicador__punto {
+  color: #86efac;
+}
+
+.indicador--sin-conexion {
+  /* 6.47:1 con el texto blanco (WCAG 1.4.3) */
+  background-color: #b91c1c;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.indicador--sin-conexion .indicador__punto {
+  color: #fecaca;
+}
+
+/* ---------- 5. Layout principal: CSS Grid ---------- */
+main {
+  flex: 1;
+  padding: 1.25rem 0 2rem;
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+}
+
+/* ---------- 6. Paneles (tarjetas grandes) ---------- */
+.panel {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  /* Box Model: padding interno + borde + sombra */
+  padding: 1rem;
+}
+
+.panel__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.panel__titulo {
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel__encabezado .panel__titulo {
+  margin-bottom: 0.25rem;
+}
+
+.contador {
+  font-size: 0.8125rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- 7. Mensaje dinámico (aria-live) ---------- */
+.mensaje {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radio);
+  font-size: 0.9375rem;
+  border-left: 4px solid var(--color-texto-suave);
+  background-color: #e2e8f0;
+}
+
+.mensaje:empty {
+  display: none;
+}
+
+/* El mensaje ocupa todo el ancho aunque el layout sea de 2 columnas */
+.mensaje {
+  grid-column: 1 / -1;
+}
+
+.mensaje--info {
+  border-left-color: var(--color-primario);
+  background-color: #dbeafe;
+}
+
+.mensaje--exito {
+  border-left-color: var(--color-exito);
+  background-color: #dcfce7;
+}
+
+.mensaje--alerta {
+  border-left-color: var(--color-pendiente);
+  background-color: #ffedd5;
+}
+
+.mensaje--error {
+  border-left-color: var(--color-error);
+  background-color: #fee2e2;
+}
+
+/* ---------- 8. Formulario ---------- */
+.formulario {
+  display: grid;
+  gap: 1rem;
+}
+
+.formulario__campo {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.formulario__campo label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: inherit;
+  background-color: #fff;
+  border: 1px solid var(--color-borde-campo);
+  border-radius: 0.5rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input[type="text"]:hover,
+textarea:hover {
+  border-color: #6b7686;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: var(--color-primario);
+  outline: 3px solid var(--color-primario);
+  outline-offset: 1px;
+}
+
+/* Campo marcado como inválido tras un envío fallido */
+input[type="text"][aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.formulario__error {
+  color: var(--color-error);
+  font-size: 0.8125rem;
+}
+
+/* ---------- 9. Botones ---------- */
+.boton {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--color-primario);
+  border: 2px solid var(--color-primario);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.boton:hover {
+  background-color: var(--color-primario-oscuro);
+  border-color: var(--color-primario-oscuro);
+}
+
+.boton:active {
+  transform: translateY(1px);
+}
+
+.boton[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.boton--secundario {
+  color: var(--color-primario);
+  background-color: #fff;
+}
+
+.boton--secundario:hover {
+  background-color: #eff6ff;
+  color: var(--color-primario-oscuro);
+}
+
+.acciones {
+  margin-top: 1rem;
+}
+
+/* ---------- 10. Publicaciones: Grid de tarjetas ---------- */
+.posts {
+  display: grid;
+  gap: 0.75rem;
+  /* mobile-first: 1 columna */
+  grid-template-columns: 1fr;
+}
+
+.posts__vacio {
+  color: var(--color-texto-suave);
+  font-size: 0.9375rem;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  background-color: #f8fafc;
+  border: 1px solid var(--color-borde);
+  border-left: 4px solid var(--color-exito);
+  border-radius: 0.5rem;
+}
+
+.tarjeta--pendiente {
+  border-left-color: var(--color-pendiente);
+  background-color: #fff7ed;
+}
+
+.tarjeta__titulo {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.tarjeta__cuerpo {
+  font-size: 0.9375rem;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta__pie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-texto-suave);
+}
+
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-weight: 600;
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.etiqueta--pendiente {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+/* ---------- 11. Pie de página ---------- */
+.pie {
+  background-color: #e2e8f0;
+  border-top: 1px solid var(--color-borde);
+  padding: 1rem 0;
+  font-size: 0.8125rem;
+  /* 8.4:1 sobre el fondo del pie (WCAG 1.4.3) */
+  color: #334155;
+}
+
+.pie a {
+  color: var(--color-primario-oscuro);
+  /* Objetivo táctil mínimo de 24px de alto (WCAG 2.5.8) */
+  display: inline-block;
+  padding: 0.25rem 0;
+  min-height: 24px;
+  line-height: 1.5;
+}
+
+/* ---------- 12. Utilidades ---------- */
+
+/* Visible solo para lectores de pantalla (WCAG) */
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* El <main> recibe foco con el enlace de salto: no se dibuja el contorno */
+main:focus {
+  outline: none;
+}
+
+/* ============================================================
+   MEDIA QUERIES
+   ============================================================ */
+
+/* Tablet: a partir de 40rem (~640px) -> 2 columnas */
+@media (min-width: 40rem) {
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .cabecera__contenido {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cabecera__titulo {
+    font-size: 1.875rem;
+  }
+
+  .posts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Escritorio: a partir de 64rem (~1024px) -> 3 columnas y más aire */
+@media (min-width: 64rem) {
+  main {
+    grid-template-columns: 22rem 1fr;
+    align-items: start;
+    gap: 1.5rem;
+  }
+
+  .panel {
+    padding: 1.5rem;
+  }
+
+  .posts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .formulario__campo label {
+    font-size: 1rem;
+  }
+}
+
+/* Pantallas muy anchas: 3 columnas de tarjetas */
+@media (min-width: 80rem) {
+  .posts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Respeta la preferencia de menos animaciones */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

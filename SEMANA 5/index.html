@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="App progresiva (PWA) que demuestra Fetch API, IndexedDB, Service Worker y sincronización offline.">
+  <meta name="theme-color" content="#2563eb">
+
+  <title>Offline Posts</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <a class="saltar-al-contenido" href="#contenidoPrincipal">Saltar al contenido</a>
+
+  <header class="cabecera">
+    <div class="contenedor cabecera__contenido">
+      <div>
+        <h1 class="cabecera__titulo">Offline Posts</h1>
+        <p class="cabecera__subtitulo">
+          Fetch API + IndexedDB + Service Worker
+        </p>
+      </div>
+
+      <p id="indicadorConexion" class="indicador indicador--conectado" role="status">
+        <span class="indicador__punto" aria-hidden="true">●</span>
+        <span class="indicador__texto">Conectado</span>
+      </p>
+    </div>
+  </header>
+
+  <main id="contenidoPrincipal" class="contenedor" tabindex="-1">
+
+    <!-- Aviso para lectores de pantalla y mensaje dinámico -->
+    <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+
+    <!-- ===================== FORMULARIO ===================== -->
+    <section class="panel" aria-labelledby="tituloFormulario">
+      <h2 id="tituloFormulario" class="panel__titulo">Agregar publicación</h2>
+
+      <form id="formulario" class="formulario" novalidate>
+        <div class="formulario__campo">
+          <label for="titulo">Título</label>
+          <input
+            type="text"
+            id="titulo"
+            name="titulo"
+            required
+            minlength="3"
+            maxlength="80"
+            placeholder="Escribe un título"
+            autocomplete="off"
+            aria-describedby="errorTitulo">
+          <p class="formulario__error" id="errorTitulo" role="alert" hidden></p>
+        </div>
+
+        <div class="formulario__campo">
+          <label for="contenido">Contenido</label>
+          <textarea
+            id="contenido"
+            name="contenido"
+            required
+            minlength="5"
+            maxlength="300"
+            rows="4"
+            placeholder="Escribe el contenido de la publicación"
+            aria-describedby="errorContenido"></textarea>
+          <p class="formulario__error" id="errorContenido" role="alert" hidden></p>
+        </div>
+
+        <button type="submit" id="botonAgregar" class="boton">
+          Agregar publicación
+        </button>
+      </form>
+    </section>
+
+    <!-- ===================== LISTA DE POSTS ===================== -->
+    <section class="panel" aria-labelledby="tituloLista">
+      <div class="panel__encabezado">
+        <h2 id="tituloLista" class="panel__titulo">Publicaciones</h2>
+        <p id="contador" class="contador">0 publicaciones</p>
+      </div>
+
+      <p id="avisoCarga" class="visualmente-oculto" role="status" aria-live="polite"></p>
+
+      <div id="contenedorPosts" class="posts" aria-busy="true">
+        <p class="posts__vacio">Cargando publicaciones...</p>
+      </div>
+
+      <div class="acciones">
+        <button type="button" id="botonRecargar" class="boton boton--secundario">
+          Recargar desde la API
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>
+        Datos de prueba desde
+        <a href="https://jsonplaceholder.typicode.com/posts/" target="_blank" rel="noopener">
+          jsonplaceholder.typicode.com/posts/
+        </a>.
+        Los POST no se guardan en el servidor: la persistencia real es IndexedDB.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
