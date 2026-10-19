@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Seguimiento GPS en tiempo real con Google Maps y Firebase Realtime Database." />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Rastreo GPS · Google Maps + Firebase</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">📍</span>
+      <div>
+        <h1>Rastreo GPS en tiempo real</h1>
+        <p class="brand-sub">Google Maps + Firebase Realtime Database</p>
+      </div>
+    </div>
+
+    <div class="auth-area" id="authArea">
+      <span class="auth-status" id="authStatus" data-state="offline">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="authStatusText">Sin sesión</span>
+      </span>
+      <button type="button" class="btn btn-ghost" id="btnLogin">Iniciar sesión</button>
+      <button type="button" class="btn btn-ghost is-hidden" id="btnLogout">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="map-wrap" aria-label="Mapa de seguimiento">
+      <div id="map" role="application" aria-label="Mapa de Google"></div>
+      <div class="map-overlay" id="mapOverlay">
+        <p id="mapOverlayText">Cargando Google Maps…</p>
+      </div>
+    </section>
+
+    <aside class="panel" aria-label="Panel de control">
+      <div class="panel-block">
+        <h2 class="panel-title">Estado</h2>
+        <ul class="status-list">
+          <li>
+            <span class="status-label">GPS</span>
+            <span class="status-value" id="gpsState" data-state="idle">Detenido</span>
+          </li>
+          <li>
+            <span class="status-label">Firebase</span>
+            <span class="status-value" id="fbState" data-state="idle">Desconectado</span>
+          </li>
+          <li>
+            <span class="status-label">Sesión</span>
+            <span class="status-value" id="sessionState">Anónima</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="panel-block actions">
+        <button type="button" class="btn btn-primary" id="btnStart" disabled>
+          ▶ Iniciar seguimiento GPS
+        </button>
+        <button type="button" class="btn btn-danger" id="btnStop" disabled>
+          ■ Detener seguimiento GPS
+        </button>
+      </div>
+
+      <div class="panel-block">
+        <h2 class="panel-title">Última lectura</h2>
+        <dl class="data-grid">
+          <div>
+            <dt>Latitud</dt>
+            <dd id="valLat">—</dd>
+          </div>
+          <div>
+            <dt>Longitud</dt>
+            <dd id="valLng">—</dd>
+          </div>
+          <div>
+            <dt>Precisión</dt>
+            <dd id="valAccuracy">—</dd>
+          </div>
+          <div>
+            <dt>Velocidad</dt>
+            <dd id="valSpeed">—</dd>
+          </div>
+          <div class="data-grid-full">
+            <dt>Última actualización</dt>
+            <dd id="valTime">—</dd>
+          </div>
+          <div class="data-grid-full">
+            <dt>Registros enviados</dt>
+            <dd id="valCount">0</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="panel-block">
+        <h2 class="panel-title">Actividad</h2>
+        <ul class="log" id="log" aria-live="polite"></ul>
+      </div>
+
+      <div class="panel-block privacy">
+        <h2 class="panel-title">Privacidad</h2>
+        <p>
+          El seguimiento solo comienza cuando lo activas y concedes permiso al navegador,
+          y se detiene cuando lo pidas. Mientras está activo, tu ubicación se transmite a
+          <strong>Firebase Realtime Database</strong> bajo tu propia cuenta. No hay rastreo
+          oculto. El seguimiento continuo depende de que el navegador y el dispositivo
+          permanezcan activos; no funciona con la página cerrada.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <dialog id="authDialog" class="dialog">
+    <form method="dialog" class="dialog-form" id="authForm">
+      <h2>Iniciar sesión</h2>
+      <p class="dialog-help">
+        Usa una cuenta de correo o entra de forma anónima. Tus ubicaciones se guardan
+        en <code>/ubicaciones/&lt;tu-uid&gt;</code> y solo tú puedes leerlas o escribirlas.
+      </p>
+
+      <label>
+        Correo electrónico
+        <input type="email" id="authEmail" autocomplete="email" placeholder="tucorreo@ejemplo.com" required />
+      </label>
+      <label>
+        Contraseña
+        <input type="password" id="authPassword" autocomplete="current-password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+      </label>
+
+      <p class="dialog-error is-hidden" id="authError" role="alert"></p>
+
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-primary" id="btnSignIn">Entrar</button>
+        <button type="button" class="btn" id="btnSignUp">Crear cuenta</button>
+        <button type="button" class="btn btn-ghost" id="btnAnon">Entrar como invitado</button>
+        <button type="submit" class="btn btn-ghost" value="cancel">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

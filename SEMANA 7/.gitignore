@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Build de producción
+dist/
+dist-ssr/
+
+# Variables de entorno con secretos (NO versionar)
+.env
+.env.local
+.env.*.local
+
+# Firebase
+.firebase/
+
+# Editores / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

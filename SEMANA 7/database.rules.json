@@ -1,0 +1,37 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "ubicaciones": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId",
+        ".validate": "newData.hasChildren(['latitude', 'longitude', 'timestamp'])",
+        "latitude": {
+          ".validate": "newData.isNumber() && newData.val() >= -90 && newData.val() <= 90"
+        },
+        "longitude": {
+          ".validate": "newData.isNumber() && newData.val() >= -180 && newData.val() <= 180"
+        },
+        "accuracy": {
+          ".validate": "newData.isNumber()"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber()"
+        },
+        "trackingActive": {
+          ".validate": "newData.isBoolean()"
+        },
+        "deviceId": {
+          ".validate": "newData.isString()"
+        },
+        "userId": {
+          ".validate": "newData.isString()"
+        },
+        "updatedAt": {
+          ".validate": "newData.isNumber()"
+        }
+      }
+    }
+  }
+}

@@ -22,9 +22,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "SEMANA 7/package-lock.json"
+
+      # SEMANA 7 usa Vite: se compila con las variables del secreto SEMANA7_ENV
+      # (contenido completo del archivo .env, que no se versiona).
+      - name: Build SEMANA 7
+        working-directory: "SEMANA 7"
+        env:
+          SEMANA7_ENV: ${{ secrets.SEMANA7_ENV }}
+        run: |
+          if [ -z "$SEMANA7_ENV" ]; then
+            echo "::error::Falta el secreto SEMANA7_ENV (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+          printf '%s\n' "$SEMANA7_ENV" > .env
+          npm ci
+          npm run build
+          rm .env
+
+      - name: Prepare site
+        run: |
+          mkdir _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'SEMANA 7' ./ _site/
+          cp -r "SEMANA 7/dist" "_site/SEMANA 7"
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: "_site"
       - uses: actions/deploy-pages@v4
         id: deployment
