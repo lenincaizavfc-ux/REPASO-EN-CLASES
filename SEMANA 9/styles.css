@@ -1,0 +1,15 @@
+:root { --gap: 1rem; }
+body { font-family: system-ui, sans-serif; margin: 0; padding: 0 1rem; }
+header { padding: 1rem 0; }
+.grid { display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fit,
+minmax(220px, 1fr)); }
+.card { border: 1px solid #ddd; border-radius: 12px; padding: 1rem; background: #fff; }
+.card h3 { margin: 0 0 0.5rem; }
+.card footer { display: flex; justify-content: space-between; align-items: center;
+margin-top: .75rem; }
+.status { margin-top: 1rem; min-height: 1.2em; }
+button { cursor: pointer; }
+@media (prefers-color-scheme: dark) {
+ body { background: #111; color: #eee; }
+ .card { background: #1a1a1a; border-color: #333; }
+}

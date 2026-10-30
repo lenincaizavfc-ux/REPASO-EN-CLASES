@@ -1,0 +1,6 @@
+[
+ { "id": 1, "nombre": "Café Orgánico", "precio": 22.90, "stock": 15 },
+ { "id": 2, "nombre": "Té Verde Matcha", "precio": 18.50, "stock": 25 },
+ { "id": 3, "nombre": "Chocolate 70%", "precio": 12.75, "stock": 40 },
+ { "id": 4, "nombre": "Taza Cerámica", "precio": 9.90, "stock": 60 }
+]

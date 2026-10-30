@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+ <meta charset="UTF-8" />
+ <title>Demo Flujo Cliente–Servidor</title>
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <!-- Estilos básicos responsivos -->
+ <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+ <header>
+ <h1>Catálogo de Productos</h1>
+ </header>
+ <main>
+ <!-- Sección del catálogo -->
+ <section aria-labelledby="catTitulo">
+ <h2 id="catTitulo">Productos disponibles</h2>
+ <!-- Contenedor de tarjetas -->
+ <div id="catalogo" class="grid"></div>
+ </section>
+ <!-- Sección del carrito -->
+ <section aria-labelledby="carTitulo">
+ <h2 id="carTitulo">Carrito</h2>
+ <ul id="carrito"></ul>
+ <button id="enviar">Enviar pedido</button>
+ <!-- Área de estado accesible: aria-live/role=status para lectores de pantalla -->
+ <div id="status" aria-live="polite" class="status" role="status"></div>
+ </section>
+ </main>
+ <!-- Módulo JS (soporta import/export si lo necesitas) -->
+ <script type="module" src="./app.js"></script>
+</body>
+</html>
