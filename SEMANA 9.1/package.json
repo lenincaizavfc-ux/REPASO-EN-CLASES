@@ -1,0 +1,11 @@
+{
+  "name": "semana-9-1",
+  "private": true,
+  "description": "Atajos: ejecuta los comandos del backend desde esta carpeta",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "test": "npm --prefix backend test",
+    "db:init": "npm --prefix backend run db:init"
+  }
+}

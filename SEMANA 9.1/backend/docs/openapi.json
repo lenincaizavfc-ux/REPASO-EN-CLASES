@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API BAD_PROD",
+    "version": "1.0.0",
+    "description": "API REST de productos con Node.js, Express y PostgreSQL (base bad_prod)."
+  },
+  "servers": [{ "url": "http://localhost:5050/api/v1" }],
+  "tags": [{ "name": "Productos" }],
+  "paths": {
+    "/productos": {
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Listar productos con paginación y filtros",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 } },
+          { "name": "categoria", "in": "query", "schema": { "type": "string" }, "example": "Hogar" },
+          { "name": "buscar", "in": "query", "description": "Texto contenido en el nombre", "schema": { "type": "string" }, "example": "sartén" },
+          { "name": "precio_min", "in": "query", "schema": { "type": "number", "minimum": 0 } },
+          { "name": "precio_max", "in": "query", "schema": { "type": "number", "minimum": 0 } },
+          { "name": "orden", "in": "query", "schema": { "type": "string", "enum": ["id_producto", "nombre", "categoria", "precio_venta", "stock"], "default": "id_producto" } },
+          { "name": "dir", "in": "query", "schema": { "type": "string", "enum": ["asc", "desc"], "default": "asc" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página de productos",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ListaProductos" } } }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "429": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "post": {
+        "tags": ["Productos"],
+        "summary": "Crear un producto",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProductoCrear" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "Producto creado (cabecera Location con su URL)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RespuestaProducto" } } }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "409": { "$ref": "#/components/responses/Error" },
+          "415": { "$ref": "#/components/responses/Error" },
+          "422": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    },
+    "/productos/categorias": {
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Listar categorías con su total de productos",
+        "responses": { "200": { "description": "Categorías" } }
+      }
+    },
+    "/productos/{id}": {
+      "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "minimum": 1 } }],
+      "get": {
+        "tags": ["Productos"],
+        "summary": "Consultar un producto",
+        "responses": {
+          "200": { "description": "Producto", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RespuestaProducto" } } } },
+          "400": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "put": {
+        "tags": ["Productos"],
+        "summary": "Reemplazar los datos editables de un producto",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProductoReemplazar" } } }
+        },
+        "responses": {
+          "200": { "description": "Producto actualizado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RespuestaProducto" } } } },
+          "400": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "409": { "$ref": "#/components/responses/Error" },
+          "422": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "patch": {
+        "tags": ["Productos"],
+        "summary": "Modificar parcialmente un producto",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProductoParcial" } } }
+        },
+        "responses": {
+          "200": { "description": "Producto actualizado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RespuestaProducto" } } } },
+          "400": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" },
+          "409": { "$ref": "#/components/responses/Error" },
+          "422": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "delete": {
+        "tags": ["Productos"],
+        "summary": "Eliminar un producto",
+        "responses": {
+          "204": { "description": "Eliminado (sin cuerpo)" },
+          "400": { "$ref": "#/components/responses/Error" },
+          "404": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Producto": {
+        "type": "object",
+        "properties": {
+          "id_producto": { "type": "integer", "example": 12 },
+          "nombre": { "type": "string", "example": "Sartén Pyrex 30 cm" },
+          "categoria": { "type": "string", "example": "Hogar" },
+          "precio_venta": { "type": "number", "example": 30.99 },
+          "stock": { "type": "integer", "example": 89 },
+          "url_imagen": { "type": "string", "nullable": true, "example": "https://www.google.com/search?tbm=isch&q=Sart%C3%A9n%20Pyrex%2030%20cm" }
+        }
+      },
+      "ProductoCrear": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["nombre", "categoria", "precio_venta"],
+        "properties": {
+          "nombre": { "type": "string", "minLength": 3, "maxLength": 150, "example": "Licuadora Oster Vaso de vidrio" },
+          "categoria": { "type": "string", "minLength": 3, "maxLength": 60, "example": "Electrodomésticos" },
+          "precio_venta": { "type": "number", "minimum": 0, "example": 79.99 },
+          "stock": { "type": "integer", "minimum": 0, "default": 0, "example": 25 },
+          "url_imagen": { "type": "string", "nullable": true, "maxLength": 500 }
+        }
+      },
+      "ProductoReemplazar": {
+        "allOf": [{ "$ref": "#/components/schemas/ProductoCrear" }],
+        "required": ["nombre", "categoria", "precio_venta", "stock"]
+      },
+      "ProductoParcial": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "nombre": { "type": "string" },
+          "categoria": { "type": "string" },
+          "precio_venta": { "type": "number" },
+          "stock": { "type": "integer" },
+          "url_imagen": { "type": "string", "nullable": true }
+        },
+        "example": { "stock": 0 }
+      },
+      "RespuestaProducto": {
+        "type": "object",
+        "properties": { "data": { "$ref": "#/components/schemas/Producto" } }
+      },
+      "ListaProductos": {
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Producto" } },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "integer", "example": 2 },
+              "limit": { "type": "integer", "example": 10 },
+              "total": { "type": "integer", "example": 10000 },
+              "totalPages": { "type": "integer", "example": 1000 }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "statusCode": { "type": "integer", "example": 422 },
+          "error": { "type": "string", "example": "Unprocessable Entity" },
+          "message": { "type": "string", "example": "Los datos del cuerpo no son válidos" },
+          "details": {
+            "type": "array",
+            "items": { "type": "object", "properties": { "campo": { "type": "string" }, "mensaje": { "type": "string" } } },
+            "example": [{ "campo": "precio_venta", "mensaje": "no puede ser negativo" }]
+          },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "path": { "type": "string", "example": "/api/v1/productos" }
+        }
+      }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error con formato uniforme",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } }
+      }
+    }
+  }
+}

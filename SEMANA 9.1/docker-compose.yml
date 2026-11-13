@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: bad_prod_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bad_prod
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      # En la imagen oficial de PostgreSQL 18+ el volumen va en /var/lib/postgresql
+      - bad_prod_data:/var/lib/postgresql
+      # Al crear el contenedor por primera vez se ejecuta este script
+      - ./db/02_tabla_y_datos.sql:/docker-entrypoint-initdb.d/01_tabla_y_datos.sql:ro
+
+volumes:
+  bad_prod_data:

@@ -1,0 +1,99 @@
+name: SEMANA 9.1 - Backend CI (Node + Express + PostgreSQL)
+
+# Solo integración continua: instala, crea la base y ejecuta las pruebas.
+# No se despliega en GitHub Pages porque Pages solo sirve sitios estáticos.
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "SEMANA 9.1/**"
+      - ".github/workflows/semana-9-1-backend.yml"
+  pull_request:
+    paths:
+      - "SEMANA 9.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # PostgreSQL temporal solo para las pruebas (la BDD real está en la red local)
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: "SEMANA 9.1/backend"
+
+    env:
+      NODE_ENV: test
+      PORT: 5050
+      API_VERSION: v1
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: bad_prod
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSL: "false"
+      DB_POOL_MAX: 10
+      CORS_ORIGINS: http://localhost:3000,http://localhost:5173
+      JSON_LIMIT: 1mb
+      PAGINATION_DEFAULT_LIMIT: 10
+      PAGINATION_MAX_LIMIT: 100
+      RATE_LIMIT_WINDOW_MS: 900000
+      RATE_LIMIT_MAX: 1000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: "SEMANA 9.1/backend/package-lock.json"
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Revisar vulnerabilidades de dependencias
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Verificar que el generador produce el mismo script SQL
+        working-directory: "SEMANA 9.1"
+        run: |
+          node db/generar_productos.js
+          git diff --exit-code db/02_tabla_y_datos.sql
+
+      - name: Crear la base bad_prod y cargar 10 000 productos
+        run: npm run db:init
+
+      - name: Pruebas unitarias y de integración
+        run: npm test
+
+      - name: Arranque del servidor (smoke test)
+        run: |
+          node server.js &
+          for i in $(seq 1 20); do
+            if curl -fs http://localhost:5050/health; then break; fi
+            sleep 1
+          done
+          echo
+          curl -fs "http://localhost:5050/api/v1/productos?limit=1"
+          echo
+          curl -fs -o /dev/null http://localhost:5050/api/v1/docs/
+          kill %1

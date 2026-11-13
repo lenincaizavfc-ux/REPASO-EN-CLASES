@@ -3,6 +3,10 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ["main"]
+    # SEMANA 9.1 es un backend (Node + PostgreSQL): no se publica en Pages
+    paths-ignore:
+      - "SEMANA 9.1/**"
+      - ".github/workflows/semana-9-1-backend.yml"
   workflow_dispatch:
 
 permissions:
@@ -48,7 +52,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'SEMANA 7' ./ _site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'SEMANA 7' --exclude 'SEMANA 9.1' ./ _site/
           cp -r "SEMANA 7/dist" "_site/SEMANA 7"
 
       - uses: actions/configure-pages@v5
